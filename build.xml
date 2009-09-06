@@ -1,0 +1,177 @@
+<project name="Mocking" default="all" basedir=".">
+
+    <description>
+        EasyMock vs. jMock
+    </description>
+
+    <property environment="env"/>
+    
+    <patternset id="all.sources">
+        <include name="**/*.java"/>
+    </patternset>
+
+    <path id="classpath.junit">
+        <pathelement location="${env.JUNIT_HOME}/junit.jar"/>
+    </path>
+
+    <path id="classpath.jmock">
+        <fileset dir="${env.JMOCK_HOME}">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+    <path id="classpath.easymock">
+        <fileset dir="${env.EASYMOCK_HOME}">
+            <include name="**/*.jar"/>
+        </fileset>
+        <fileset dir="${env.EASYMOCKCLASSEXTENSION_HOME}">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+    <path id="classpath.mockito">
+        <fileset dir="${env.MOCKITO_HOME}">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+    <target name="init">
+        <tstamp>
+            <format property="TODAY" pattern="yyyy-MM-dd"/>
+        </tstamp>
+
+        <property name="srcDir" value="src"/>
+        <property name="binDir" value="bin"/>
+        <property name="classesDir" value="classes"/>
+        <property name="docsDir" value="docs"/>
+
+        <property name="srcFiles" value="${srcDir}/**"/>
+        <property name="docsFiles" value="${docsDir}/**"/>
+
+        <property name="reportsDir" value="reports"/>
+        <property name="testReportsDir" value="${reportsDir}/tests"/>
+    </target>
+
+    <target name="all" depends="run, docs"
+            description="Makes a clean distribution"/>
+
+    <!--
+        Compilation
+    -->
+
+    <target name="compile" depends="init"
+            description="Compiles all classes">
+        <mkdir dir="${classesDir}"/>
+        <javac destdir="${classesDir}" debug="on">
+            <src path="${srcDir}"/>
+            <classpath>
+                <path refid="classpath.junit"/>
+                <path refid="classpath.jmock"/>
+                <path refid="classpath.easymock"/>
+                <path refid="classpath.mockito"/>
+            </classpath>
+            <patternset refid="all.sources"/>
+        </javac>
+    </target>
+
+    <target name="run" depends="compile">
+        <mkdir dir="${testReportsDir}"/>
+        <junit printsummary="yes">
+            <classpath>
+                <pathelement location="${classesDir}"/>
+                <path refid="classpath.jmock"/>
+                <path refid="classpath.easymock"/>
+                <path refid="classpath.mockito"/>
+            </classpath>
+            <formatter type="xml"/>
+            <batchtest fork="yes" todir="${testReportsDir}">
+                <fileset dir="${srcDir}">
+                    <include name="**/*_jMock.java"/>
+                    <include name="**/*_EasyMock.java"/>
+                    <include name="**/*_Mockito.java"/>
+                </fileset>
+            </batchtest>
+        </junit>
+        <junitreport todir="${testReportsDir}">
+            <fileset dir="${testReportsDir}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${testReportsDir}/html"/>
+        </junitreport>
+    </target>
+
+    <!--
+        Docs
+    -->
+
+    <target name="docs" depends="init"
+            description="Generates the document.">
+        <echo message="Processing Mocking.txt ..."/>
+        <exec executable="perl"
+              output="${docsDir}/Mocking.html">
+            <arg value="${binDir}/txt2html.pl"/>
+            <arg value="${docsDir}/Mocking.txt"/>
+            <env key="TXT2HTML_DATE" value="${TODAY}"/>
+        </exec>
+        <exec executable="perl"
+              output="${docsDir}/Mocking3.html">
+            <arg value="${binDir}/txt2html.pl"/>
+            <arg value="${docsDir}/Mocking3.txt"/>
+            <env key="TXT2HTML_DATE" value="${TODAY}"/>
+        </exec>
+    </target>
+
+    <target name="upload" depends="init"
+            description="Uploads the latest version to jeantessier.com">
+        <ftp server="ftp.jeantessier.com"
+             userid="jeantessier"
+             password="pu%pwIT"
+             remotedir="jeantessier.com/SoftwareEngineering"
+             depends="yes"
+             binary="no"
+             verbose="yes">
+            <fileset dir="${docsDir}" includes="*.css"/>
+            <fileset dir="${docsDir}" includes="*.html"/>
+        </ftp>
+    </target>
+
+    <!--
+        Cleaning up
+    -->
+
+    <target name="realclean" depends="cleandocs, clean"
+            description="Removes all produced files"/>
+
+    <target name="clean" depends="init">
+        <delete dir="${classesDir}"
+                includeEmptyDirs="true"
+                verbose="true"/>
+        <delete dir="${reportsDir}"
+                includeEmptyDirs="true"
+                verbose="true"/>
+        <delete verbose="true">
+            <fileset dir="." defaultexcludes="no">
+                <patternset>
+                    <include name="**/*~"/>
+                    <include name="**/*.bak"/>
+                    <include name="**/*.class"/>
+                </patternset>
+            </fileset>
+        </delete>
+    </target>
+
+    <target name="cleandocs" depends="init">
+        <delete verbose="true">
+            <fileset dir="docs">
+                <patternset>
+                    <include name="**/*.html"/>
+                    <exclude name="index.html"/>
+                    <exclude name="Menu.html"/>
+                    <exclude name="Title.html"/>
+                    <exclude name="tasks/**"/>
+                </patternset>
+            </fileset>
+        </delete>
+    </target>
+
+</project>

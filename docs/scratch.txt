@@ -1,0 +1,83 @@
+---++ Title
+
+Description
+
+<table width="100%">
+<tr><th width="50%">jMock</th><th>EasyMock</th></tr>
+<tr><td>
+
+<div class="lowlight">
+
+    code
+
+</div>
+
+</td><td>
+
+<div class="lowlight">
+
+    code
+
+</div>
+
+</td></tr><tr><td>
+
+<div class="specialnote">
+
+note
+
+</div>
+
+</td><td>
+
+<div class="specialnote">
+
+note
+
+</div>
+
+</td></tr>
+</table>
+
+----
+
+
+
+
+</td><td>
+
+<div class="lowlight">
+
+    import junit.framework.TestCase;
+    import static org.mockito.AdditionalMatchers.*;
+    import org.mockito.InOrder;
+    import static org.mockito.Mockito.*;
+
+    import java.util.Map;
+
+    public class CacheTest_Mockito extends TestCase {
+        public void testMultipleCalls() {
+            Map mockStorage = mock(Map.class);
+            stub(mockStorage.size()).toReturn(42);
+
+            Cache sut = new Cache(mockStorage);
+            sut.conditionalLogAndClear();
+
+            verify(mockStorage, times(2)).size();
+            verify(mockStorage).clear();
+        }
+
+        public void testSequenceOnOneMock() {
+            Map mockStorage = mock(Map.class);
+            stub(mockStorage.size()).toReturn(42);
+            InOrder inOrder = inOrder(mockStorage);
+
+            Cache sut = new Cache(mockStorage);
+            sut.logAndClear();
+
+            inOrder.verify(mockStorage).size();
+            inOrder.verify(mockStorage).clear();
+        }
+    }
+
+</div>
