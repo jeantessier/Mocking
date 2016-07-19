@@ -3,7 +3,7 @@
 by [[http://jeantessier.com/][Jean Tessier]]
 
 This document shows how to do common mocking tasks in Java using both
-[[http://jmock.org][jMock]],
+[[http://www.jmock.org][jMock]],
 [[http://easymock.org][EasyMock]],
 and [[http://code.google.com/p/mockito][Mockito]].
 
