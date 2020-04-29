@@ -1,6 +1,6 @@
 ---+ Mocking in Java: jMock vs. EasyMock
 
-by [[http://jeantessier.com/][Jean Tessier]]
+by [[https://jeantessier.com/][Jean Tessier]]
 
 This document shows how to do common mocking tasks in Java using both
 [[http://www.jmock.org][jMock]] and
@@ -117,7 +117,7 @@ I override =runTest()= instead in the code below.
 
     import junit.framework.TestCase;
     import org.jmock.Mockery;
-    
+
     public class Multiple_jMock extends TestCase {
         *private Mockery context;*
 
@@ -412,7 +412,7 @@ inner class.
             verify(mockSome);
         }
     }
-    
+
 </div>
 
 </td></tr><tr><td>
