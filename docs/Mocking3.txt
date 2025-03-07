@@ -1688,7 +1688,6 @@ logs, without caring about the details of what gets written.
             verify(mockStorage).get(key);
             verify(mockLogger).log(anyString());
         }
-
     }
 
 </div>
